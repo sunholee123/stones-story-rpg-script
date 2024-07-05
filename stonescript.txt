@@ -1,0 +1,320 @@
+import UI/BetterInfo2
+//import Cosmetics/PetDog
+//import Cosmetics/PetCrab
+
+>`0,1,@foe.state@, @foe.time@
+>`0,2,@time.FormatCasual(totaltime)@
+//>`0,3,Left:@item.left@
+//>`0,4,Right:@item.right@
+
+?hp < 15
+  activate potion
+
+var dis = 21
+
+func eq_tri_ouro()
+  equipL triskelion
+  equipR ouroboros
+
+func pick_up()
+  ?pickup.distance < 10
+    equipL star
+    equipR ouroboros
+
+func bardiche_skill()
+  ?foe.distance <= 10 &
+  ^foe.hp > 52 &
+  ^item.GetCooldown(＂bardiche＂) <= 0 |
+  ^item.GetCooldown(＂bardiche＂) > 870
+    equip bardiche
+    activate R
+
+func dodge()
+  ?item.GetCooldown(＂mind＂)<=0
+   equipL mind
+
+func dash()
+  ?foe.distance>10&item.GetCooldown(＂dash＂)<=0
+    equipR dashing shield
+    activate R
+
+func blade_skill()
+  ?(item.getCooldown(＂blade＂) <= 0)
+    equip blade
+    activate R
+
+func poison()
+  ?foe.debuffs.string!∞
+    equipL poison wand dp
+
+func fire()
+  ?foe.debuffs.string!φ
+    equipR fire wand df
+
+////////////////////////////////////////////////
+?loc=rocky
+  equipL star
+  equipR triskelion
+/*
+  ?harvest=Boulder & harvest.distance < 15
+    equip shovel
+
+  pick_up()
+
+  ?foe = boss & foe.distance < 20
+    equipL stone
+    equipR vigor shield
+*/
+  ?foe=phase1
+    equipL vigor wand
+    equipR poison wand
+  :?foe=phase2
+    equipL vigor wand
+    equipR ice wand
+
+
+////////////////////////////////////////////////
+:?loc=deadwood
+  equip star
+  equip triskelion
+
+//  ?harvest=tree & harvest.distance < 15
+//    equipL ouroboros
+//    equipR hatchet
+
+  ?foe.distance < 24
+    ?foe = boss
+      ?foe.name=＂Poena＂
+        equipL vigor hammer dl
+        equipR vigor hammer ah
+        dash()
+      ://tree
+        equipL vigor hammer dl
+        equipR vigor sword dl
+        poison()
+        fire()
+        bardiche_skill()
+        dash()
+    :
+      ?foe=immune_to_ranged
+        equip bardiche
+        bardiche_skill()
+      ://ants and wasps
+        equip repeat
+        //equip ether wand//for quest...
+
+  pick_up()
+
+
+////////////////////////////////////////////////
+:?loc=cave
+  ?foe.count = 0 | foe.distance > dis
+    equipR triskelion
+      ?pickup.distance < 10
+        equipL star
+      :
+        equipL ouroboros
+  :
+    ?foe = boss
+      equip bardiche
+      bardiche_skill()
+      blade_skill()
+    :
+      ?hp<maxhp
+        equipL ice wand
+        equipR vigor wand
+      :
+        equip bardiche
+        dash()
+
+
+////////////////////////////////////////////////
+:?loc=mushroom
+  ?foe.count = 0 | foe.distance > dis
+    equipR triskelion
+    equipL ouroboros
+  :
+    ?foe=boss
+      ?foe.name=＂Mr. Puff＂
+        fire()
+        equip repeat
+        ?foe.distance<14
+          dodge()
+      :?foe.name=＂Big A** Snail＂
+        equipL vigor hammer ah
+        equipR vigor hammer dl
+        poison()
+        fire()
+      ://main boss
+        equipL vigor hammer dl
+        equipR vigor hammer ah
+        poison()
+        fire()
+        bardiche_skill()
+        dash()
+    :
+      ?foe.name=＂Ant＂&foe.count<=2
+        equip repeat
+      ://not ants
+        ?hp<maxhp
+          equipL poison wand
+          equipR vigor wand
+        :
+          equipL vigor wand
+          equipR vigor hammer dl
+          poison()
+          dash()
+
+
+////////////////////////////////////////////////
+:?loc=halls
+  ?foe.count = 0 | foe.distance > dis
+    equipR triskelion
+    equipL ouroboros
+  :
+    ?foe = boss
+      ?foe=phase1
+        ?loc.stars>10
+          equipL vigor wand
+          equipR crossbow
+        :
+          equipL vigor wand
+          equipR ether wand
+        ?foe.state=32&foe.time>=65
+          dodge()
+        ?foe.state=0
+          ?hp<maxhp
+            equipL vigor wand dl
+            equipR vigor hammer dl
+          :
+            equip bardiche
+          bardiche_skill()
+          dash()
+      :?foe=phase2
+        ?foe.state=32|foe.state=33
+          equipL vigor wand
+          equipR poison wand
+        :
+          equip bardiche
+          bardiche_skill()
+          dash()
+    :
+      ?foe.name=＂Big Booo＂&loc.stars>10
+        equipL vigor wand
+        equipR crossbow*10
+
+      :?foe.name=＂Skeletony＂
+        equip bardiche
+        bardiche_skill()
+      :?foe.name=＂Skeletimmy＂
+        equip bardiche
+        bardiche_skill()
+      :
+        equipL poison wand
+        equipR vigor wand
+      //?hp=maxhp
+        //dash()
+
+
+////////////////////////////////////////////////
+:?loc=mine
+  ?foe.count = 0 | foe.distance > 26
+    equipR triskelion
+    equipL ouroboros
+  :
+    ?foe=boss
+      ?foe.name=＂Bomb Cart＂
+        equip repeat
+        ?foe.distance<8
+          dodge()
+      :
+        ?(foe.state=32)&(foe.time=30)
+            dodge()
+        :?foe.state=33
+          equipL vigor hammer dl
+          equipR poison hammer dp
+          bardiche_skill()
+          dash()
+        :
+          equip repeat
+    :// not boss
+      equip repeat
+  pick_up()
+
+
+////////////////////////////////////////////////
+:?loc=icy
+  ?foe.count = 0 | foe.distance > 25
+    eq_tri_ouro()
+  :
+    ?foe=boss
+      ?foe.name=＂Elemental＂
+        equipL vigor hammer dl
+        equipR vigor sword dl
+        fire()
+        bardiche_skill()
+        dash()
+      ://main boss
+        equipL vigor sword dl
+        equipR ice wand
+        fire()
+        bardiche_skill()
+        dash()
+    :?(foe=pillar|foe=wall)
+      ?totaltime>1800//boss wall
+        ?hp<maxhp
+          equipL vigor hammer ah
+          equipR vigor shield
+        :
+          equip bardiche
+          bardiche_skill()
+      :
+        equip bardiche
+      fire()
+      dash()
+    :
+      equipL vigor wand dl
+      equipR vigor shield
+      poison()
+      fire()
+      ?foe.name=elemental
+        equip repeat
+
+////////////////////////////////////////////////
+:?loc=temple
+  ?foe.count = 0 | foe.distance > 25
+    eq_tri_ouro()
+  :
+    ?(foe=boss)
+      equip bardiche
+      ?(item.getCooldown(＂bardiche＂) <= 0)
+        ?(foe.distance < 11)
+          activate R
+    :
+      equipL ice wand
+      equipR vigor wand
+
+////////////////////////////////////////////////
+
+
+?foe.name=＂Acronian Scout＂
+  equip repeat
+  bardiche_skill()
+
+?item.left.state = 3
+  equipL moon
+:?item.right.state = 3&(item.left!＂Poison Wand＂)
+  equipR moon
+
+?foe.distance<25&foe.count>6
+  blade_skill()
+
+func steal()
+  ?item.GetCooldown(＂skeleton_arm＂) <= 0 & 
+^foe.hp <= 20 & foe ! immune_to_physical & 
+^foe.armor <= 0 & foe ! boss
+    equip skeleton arm
+    ?item.CanActivate(＂skeleton_arm＂)
+       activate R
+       >o-2,-3,#ffcccc,Shhh!~
+//steal()
