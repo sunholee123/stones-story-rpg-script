@@ -6,6 +6,7 @@ import UI/BetterInfo2
 >`0,2,@time.FormatCasual(totaltime)@
 //>`0,3,Left:@item.left@
 //>`0,4,Right:@item.right@
+>`0,3,@foe.debuffs.string@
 
 ?hp < 15
   activate potion
@@ -50,6 +51,10 @@ func poison()
 func fire()
   ?foe.debuffs.string!φ
     equipR fire wand df
+
+func ice()
+  ?foe.debuffs.string!＂chill:6＂
+    equipL ice wand
 
 ////////////////////////////////////////////////
 ?loc=rocky
@@ -136,33 +141,35 @@ func fire()
   :
     ?foe=boss
       ?foe.name=＂Mr. Puff＂
-        fire()
         equip repeat
         ?foe.distance<14
           dodge()
       :?foe.name=＂Big A** Snail＂
         equipL vigor hammer ah
         equipR vigor hammer dl
-        poison()
-        fire()
-      ://main boss
-        equipL vigor hammer dl
-        equipR vigor hammer ah
-        poison()
-        fire()
-        bardiche_skill()
+        dash()
+      ://main bosses
+        ?foe.name=＂Enoki＂
+          equipL vigor sword
+          equipR vigor hammer dl
+        :?foe.name=＂Morel＂
+          equipL vigor hammer dl
+          equipR vigor hammer ah
+        :
+          equipL vigor hammer dl
+          equipR vigor hammer ah
+          poison()
+          fire()
+          //bardiche_skill()//not working...
         dash()
     :
-      ?foe.name=＂Ant＂&foe.count<=2
+      ?foe.name=＂Ant＂&foe.count<=3
         equip repeat
+        dash()
       ://not ants
-        ?hp<maxhp
-          equipL poison wand
-          equipR vigor wand
-        :
-          equipL vigor wand
-          equipR vigor hammer dl
-          poison()
+        equipL ice wand
+        equipR fire wand
+        ?hp=maxhp
           dash()
 
 
@@ -175,8 +182,8 @@ func fire()
     ?foe = boss
       ?foe=phase1
         ?loc.stars>10
-          equipL vigor wand
-          equipR crossbow
+          equip repeat
+          fire()
         :
           equipL vigor wand
           equipR ether wand
@@ -199,19 +206,19 @@ func fire()
           bardiche_skill()
           dash()
     :
-      ?foe.name=＂Big Booo＂&loc.stars>10
+      ?foe.name=＂Big Booo＂
         equipL vigor wand
-        equipR crossbow*10
-
-      :?foe.name=＂Skeletony＂
-        equip bardiche
-        bardiche_skill()
-      :?foe.name=＂Skeletimmy＂
+        //equipR crossbow*10
+        equipR poison wand
+        dash()
+      :?foe.name=＂Skelet＂//tony&timmy
         equip bardiche
         bardiche_skill()
       :
-        equipL poison wand
+        equipL ether wand
         equipR vigor wand
+        //poison()
+        //fire()
       //?hp=maxhp
         //dash()
 
@@ -306,7 +313,7 @@ func fire()
 :?item.right.state = 3&(item.left!＂Poison Wand＂)
   equipR moon
 
-?foe.distance<25&foe.count>6
+?foe.distance<25&foe.count>5
   blade_skill()
 
 func steal()
