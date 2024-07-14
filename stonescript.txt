@@ -8,23 +8,23 @@ import UI/BetterInfo2
 //>`0,4,Right:@item.right@
 >`0,3,@foe.debuffs.string@
 
-?hp < 15
+?hp<15
   activate potion
 
-var dis = 25
+var dis=25
 
 func move_pickup()
-  ?pickup.distance < 10
+  ?pickup.distance<10
     equipL star
   :
     equipL ouroboros
   equipR triskelion
 
 func bardiche_skill()
-  ?foe.distance <= 10 &
-  ^foe.hp > 52 &
-  ^item.GetCooldown(＂bardiche＂) <= 0 |
-  ^item.GetCooldown(＂bardiche＂) > 870
+  ?foe.distance<=10 &
+  ^foe.hp>52 &
+  ^item.GetCooldown(＂bardiche＂)<=0 |
+  ^item.GetCooldown(＂bardiche＂)>870
     equip bardiche
     activate R
 
@@ -38,7 +38,7 @@ func dash()
     activate R
 
 func blade_skill()
-  ?(item.getCooldown(＂blade＂) <= 0)
+  ?(item.getCooldown(＂blade＂)<=0)
     equip blade
     activate R
 
@@ -54,13 +54,13 @@ func ice()
   ?foe.debuffs.string!＂chill:6＂
     equipR ice wand
 
-//Rocky Plateau/////////////////////////////////
+// Rocky Plateau ///////////////////////////////
 ?loc=rocky
 /*
-  ?harvest=Boulder & harvest.distance < 15
+  ?harvest=Boulder & harvest.distance<15
     equip shovel
 
-  ?foe = boss & foe.distance < 20
+  ?foe=boss & foe.distance<20
     equipL stone
     equipR vigor shield
 */
@@ -72,7 +72,7 @@ func ice()
     equipR ice wand
 
 
-//Deadwood Canyon///////////////////////////////
+// Deadwood Canyon /////////////////////////////
 :?loc=deadwood
   ?foe=boss
     ?foe.name=＂Poena＂
@@ -86,7 +86,7 @@ func ice()
       poison()
       bardiche_skill()
       dash()
-  :
+  ://not boss
     ?foe=immune_to_ranged
       equip heavy hammer
     ://ants and wasps
@@ -95,21 +95,20 @@ func ice()
       dash()
 
 
-//Caves of Fear ////////////////////////////////
+// Caves of Fear ///////////////////////////////
 :?loc=cave
-  ?foe = boss
+  ?foe=boss
     equip bardiche
     bardiche_skill()
     poison()
     dash()
-
-  :
+  ://not boss
     equipL ice wand
     equipR vigor wand
     dash()
 
 
-//Mushroom Forest///////////////////////////////
+// Mushroom Forest /////////////////////////////
 :?loc=mushroom
   ?foe=boss
     ?foe.name=＂Mr. Puff＂
@@ -132,7 +131,7 @@ func ice()
         equipR vigor hammer dl
         poison()
       dash()
-  :
+  ://not boss
     ?foe.name=＂Ant＂&foe.count<=3
       equip repeat
       dash()
@@ -144,29 +143,30 @@ func ice()
         dash()
 
 
-//Haunted Halls/////////////////////////////////
+// Haunted Halls ///////////////////////////////
 :?loc=halls
   ?foe=boss
-    ?foe=phase1
-      equip vigor crossbow
-      ?foe.state=32&foe.time>=65
-        dodge()
-    :?foe=phase2
-      ?foe.debuffs.string!∞
-        equipL poison wand dp
-        equipR ice wand
-      :
+    ?foe.name=＂R.I.Pieces＂
+      equip repeat
+    ://main boss
+      ?foe=phase1
         equip vigor crossbow
-  :
+        ?foe.state=32&foe.time>=65
+          dodge()
+      :?foe=phase2
+        ?foe.debuffs.string!∞
+          equipL poison wand dp
+          equipR ice wand
+        :
+          equip vigor crossbow
+  ://not boss
     equipL ice wand
     equipR vigor wand
     ?foe.name=＂Big Booo＂//&hp=maxhp
       dash()
-  ?foe.name=＂R.I.Pieces＂
-    equip repeat
 
 
-//Boiling Mine//////////////////////////////////
+// Boiling Mine ////////////////////////////////
 :?loc=mine
   ?foe=boss
     ?foe.name=＂Bomb Cart＂
@@ -186,12 +186,12 @@ func ice()
           equip ether crossbow
       :
         equip ether crossbow
-  :// not boss
+  ://not boss
     equipL vigor wand
     equipR ice wand
 
 
-//Icy Ridge/////////////////////////////////////
+// Icy Ridge ///////////////////////////////////
 :?loc=icy
   ?foe=boss
     ?foe.name=＂Elemental＂
@@ -213,13 +213,13 @@ func ice()
   :?(foe=pillar|foe=wall)
     equipL vigor wand
     equipR vigor shield
-  :
+  ://not boss
     ?foe.name=elemental
       equip repeat
     :
       equip fire crossbow
 
-//Temple ///////////////////////////////////////
+// Temple //////////////////////////////////////
 :?loc=temple
   ?foe=boss
     equip bardiche
@@ -231,48 +231,47 @@ func ice()
       dodge()
     :
       dash()
-  :
+  ://not boss
     equipL ice wand
     equipR vigor wand
 //    ?hp=maxhp
     dash()
 
 
-
-////////////////////////////////////////////////
-
-
-?foe.name=＂Acronian Scout＂
-  equip repeat
-  bardiche_skill()
+// Postprocessing //////////////////////////////
 
 ?item.left.state=3
   equipL moon
 ?item.right.state=3&item.left!＂poison wand＂
   equipR moon
 
-
 ?foe.distance<25&foe.count>5&totaltime<1800
   blade_skill()
 
-?foe.count = 0 | foe.distance > dis
+?foe.count=0 | foe.distance>dis
   move_pickup()
 
-////////////////////////////////////////////////
+//Only for quests?//////////////////////////////
+
+/*
+?foe.name=＂Acronian Scout＂
+  equip repeat
+  bardiche_skill()
 
 func steal()
-  ?item.GetCooldown(＂skeleton_arm＂) <= 0 & 
-^foe.hp <= 20 & foe ! immune_to_physical & 
-^foe.armor <= 0 & foe ! boss
+  ?item.GetCooldown(＂skeleton_arm＂)<=0 & 
+^foe.hp<=20 & foe ! immune_to_physical & 
+^foe.armor<=0 & foe ! boss
     equip skeleton arm
     ?item.CanActivate(＂skeleton_arm＂)
        activate R
-       >o-2,-3,#ffcccc,Shhh!~
-//steal()
+     >o-2,-3,#ffcccc,Shhh!~
+steal()
 
 func mask_skill()
   ?item.GetCooldown(＂mask＂)<=0
     ?foe.count>0&foe.distance<20//&foe=boss
       equip mask
       activate R
-//mask_skill()
+mask_skill()
+*/
