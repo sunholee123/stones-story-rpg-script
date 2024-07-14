@@ -54,9 +54,9 @@ func fire()
 
 func ice()
   ?foe.debuffs.string!＂chill:6＂
-    equipL ice wand
+    equipR ice wand
 
-////////////////////////////////////////////////
+//Rocky Plateau/////////////////////////////////
 ?loc=rocky
   equipL star
   equipR triskelion
@@ -64,7 +64,7 @@ func ice()
   ?harvest=Boulder & harvest.distance < 15
     equip shovel
 
-  pick_up()
+  //pick_up()
 
   ?foe = boss & foe.distance < 20
     equipL stone
@@ -78,17 +78,13 @@ func ice()
     equipR ice wand
 
 
-////////////////////////////////////////////////
+//Deadwood Canyon///////////////////////////////
 :?loc=deadwood
   equip star
   equip triskelion
 
-//  ?harvest=tree & harvest.distance < 15
-//    equipL ouroboros
-//    equipR hatchet
-
   ?foe.distance < 24
-    ?foe = boss
+    ?foe=boss
       ?foe.name=＂Poena＂
         equipL vigor hammer dl
         equipR vigor hammer ah
@@ -96,22 +92,20 @@ func ice()
       ://tree
         equipL vigor hammer dl
         equipR vigor sword dl
+        ice()
         poison()
-        fire()
         bardiche_skill()
         dash()
     :
       ?foe=immune_to_ranged
-        equip bardiche
-        bardiche_skill()
+        equip heavy hammer
       ://ants and wasps
         equip repeat
-        //equip ether wand//for quest...
+      ?hp=maxhp
+        dash()
 
-  pick_up()
 
-
-////////////////////////////////////////////////
+//Caves of Fear ////////////////////////////////
 :?loc=cave
   ?foe.count = 0 | foe.distance > dis
     equipR triskelion
@@ -123,17 +117,16 @@ func ice()
     ?foe = boss
       equip bardiche
       bardiche_skill()
-      blade_skill()
+      poison()
+      dash()
+
     :
-      ?hp<maxhp
-        equipL ice wand
-        equipR vigor wand
-      :
-        equip bardiche
-        dash()
+      equipL ice wand
+      equipR vigor wand
+      dash()
 
 
-////////////////////////////////////////////////
+//Mushroom Forest///////////////////////////////
 :?loc=mushroom
   ?foe.count = 0 | foe.distance > dis
     equipR triskelion
@@ -153,77 +146,52 @@ func ice()
           equipL vigor sword
           equipR vigor hammer dl
         :?foe.name=＂Morel＂
-          equipL vigor hammer dl
-          equipR vigor hammer ah
+          equipL vigor sword
+          equipR vigor hammer dl
         :
-          equipL vigor hammer dl
-          equipR vigor hammer ah
+          equipL vigor hammer ah
+          equipR vigor hammer dl
           poison()
-          fire()
-          //bardiche_skill()//not working...
         dash()
     :
       ?foe.name=＂Ant＂&foe.count<=3
         equip repeat
         dash()
       ://not ants
+        //equipL poison wand
         equipL ice wand
-        equipR fire wand
+        equipR fire wand        
         ?hp=maxhp
           dash()
 
 
-////////////////////////////////////////////////
+//Haunted Halls/////////////////////////////////
 :?loc=halls
   ?foe.count = 0 | foe.distance > dis
     equipR triskelion
     equipL ouroboros
   :
-    ?foe = boss
+    ?foe=boss
       ?foe=phase1
-        ?loc.stars>10
-          equip repeat
-          fire()
-        :
-          equipL vigor wand
-          equipR ether wand
+        equip vigor crossbow
         ?foe.state=32&foe.time>=65
           dodge()
-        ?foe.state=0
-          ?hp<maxhp
-            equipL vigor wand dl
-            equipR vigor hammer dl
-          :
-            equip bardiche
-          bardiche_skill()
-          dash()
       :?foe=phase2
-        ?foe.state=32|foe.state=33
-          equipL vigor wand
-          equipR poison wand
+        ?foe.debuffs.string!∞
+          equipL poison wand dp
+          equipR ice wand
         :
-          equip bardiche
-          bardiche_skill()
-          dash()
+          equip vigor crossbow
     :
-      ?foe.name=＂Big Booo＂
-        equipL vigor wand
-        //equipR crossbow*10
-        equipR poison wand
+      equipL ice wand
+      equipR vigor wand
+      ?foe.name=＂Big Booo＂//&hp=maxhp
         dash()
-      :?foe.name=＂Skelet＂//tony&timmy
-        equip bardiche
-        bardiche_skill()
-      :
-        equipL ether wand
-        equipR vigor wand
-        //poison()
-        //fire()
-      //?hp=maxhp
-        //dash()
+    ?foe.name=＂R.I.Pieces＂
+      equip repeat
 
 
-////////////////////////////////////////////////
+//Boiling Mine//////////////////////////////////
 :?loc=mine
   ?foe.count = 0 | foe.distance > 26
     equipR triskelion
@@ -231,75 +199,80 @@ func ice()
   :
     ?foe=boss
       ?foe.name=＂Bomb Cart＂
-        equip repeat
+        equip ether crossbow
         ?foe.distance<8
           dodge()
-      :
+      ://main boss
         ?(foe.state=32)&(foe.time=30)
             dodge()
         :?foe.state=33
-          equipL vigor hammer dl
-          equipR poison hammer dp
-          bardiche_skill()
-          dash()
+          ?foe.armor>0
+            equipL vigor hammer dl
+            equipR vigor hammer ah
+            bardiche_skill()
+            dash()
+          :
+            equip ether crossbow
         :
-          equip repeat
+          equip ether crossbow
     :// not boss
-      equip repeat
-  pick_up()
+      equipL vigor wand
+      equipR ice wand
 
 
-////////////////////////////////////////////////
+//Icy Ridge/////////////////////////////////////
 :?loc=icy
   ?foe.count = 0 | foe.distance > 25
     eq_tri_ouro()
   :
     ?foe=boss
       ?foe.name=＂Elemental＂
-        equipL vigor hammer dl
-        equipR vigor sword dl
-        fire()
-        bardiche_skill()
+        equipL vigor sword
+        equipR vigor hammer dl
         dash()
       ://main boss
-        equipL vigor sword dl
-        equipR ice wand
-        fire()
-        bardiche_skill()
-        dash()
-    :?(foe=pillar|foe=wall)
-      ?totaltime>1800//boss wall
-        ?hp<maxhp
-          equipL vigor hammer ah
-          equipR vigor shield
+        ?foe.state=33
+//        ^|foe.debuffs.string!＂chill:6＂
+          equipL ice wand
+          equipR fire shield
         :
-          equip bardiche
-          bardiche_skill()
-      :
-        equip bardiche
-      fire()
-      dash()
-    :
-      equipL vigor wand dl
+          equip fire crossbow
+
+        ?foe.armor>0
+          equipL vigor hammer dl
+          equipR vigor sword
+          dash()
+    :?(foe=pillar|foe=wall)
+      equipL vigor wand
       equipR vigor shield
-      poison()
-      fire()
+    :
       ?foe.name=elemental
         equip repeat
+      :
+        equip fire crossbow
 
-////////////////////////////////////////////////
+//Temple ///////////////////////////////////////
 :?loc=temple
   ?foe.count = 0 | foe.distance > 25
     eq_tri_ouro()
   :
-    ?(foe=boss)
+    ?foe=boss
       equip bardiche
-      ?(item.getCooldown(＂bardiche＂) <= 0)
-        ?(foe.distance < 11)
-          activate R
+      bardiche_skill()
+      ?foe.debuffs.string!∞
+        equipL poison wand dp
+        equipR ice wand
+      ?foe.state=112&foe.time<60&foe.time=58
+        dodge()
+      :
+        dash()
     :
       equipL ice wand
       equipR vigor wand
+//      ?hp=maxhp
+      dash()
+
+
 
 ////////////////////////////////////////////////
 
@@ -308,13 +281,18 @@ func ice()
   equip repeat
   bardiche_skill()
 
-?item.left.state = 3
+?item.left.state=3
   equipL moon
-:?item.right.state = 3&(item.left!＂Poison Wand＂)
+?item.right.state=3&item.left!＂poison wand＂
   equipR moon
 
-?foe.distance<25&foe.count>5
+
+?foe.distance<25&foe.count>5&totaltime<1800
   blade_skill()
+
+pick_up()
+
+////////////////////////////////////////////////
 
 func steal()
   ?item.GetCooldown(＂skeleton_arm＂) <= 0 & 
@@ -325,3 +303,10 @@ func steal()
        activate R
        >o-2,-3,#ffcccc,Shhh!~
 //steal()
+
+func mask_skill()
+  ?item.GetCooldown(＂mask＂)<=0
+    ?foe.count>0&foe.distance<20//&foe=boss
+      equip mask
+      activate R
+//mask_skill()
